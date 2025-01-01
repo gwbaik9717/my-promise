@@ -47,12 +47,18 @@ export class MyPromise<T> {
   }
 
   then(onfulfilled: (value: T) => void, onrejected: (reason: any) => void) {
-    this.onfulfilledQueue.push(onfulfilled);
-    this.onrejectedQueue.push(onrejected);
+    if (this.status === "pending") {
+      this.onfulfilledQueue.push(onfulfilled);
+      this.onrejectedQueue.push(onrejected);
+    }
+
+    return this;
   }
 
   catch(onrejected: (reason: any) => void) {
     this.onrejectedQueue.push(onrejected);
+
+    return this;
   }
 }
 

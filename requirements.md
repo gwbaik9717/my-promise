@@ -8,8 +8,11 @@
 - [x] resolve 함수를 호출하면 fulfilled 상태로 변경된다.
 - [x] reject 함수를 호출하면 rejected 상태로 변경된다.
 - [x] resolve, reject 함수는 인자로 아무 값이나 받을 수 있다.
-- [x] then 메서드는 두 개의 콜백 함수를 인자로 받는데, 첫 번째 콜백 함수는 onfullfilledQueue에 저장되고, 두 번째 콜백 함수는 onrejectedQueue에 저장된다.
 - [x] catch 메서드는 한 개의 콜백 함수를 인자로 받는데, onrejectedQueue에 저장된다.
 - [x] resolve 함수를 호출하면 onfullfilledQueue에 저장된 모든 콜백 함수가 비동기로 실행된다.
 - [x] reject 함수를 호출하면 onrejectedQueue에 저장된 모든 콜백 함수가 비동기로 실행된다.
-- [ ] then 메소드는 새로운 Promise를 반환한다.
+- [x] then 메서드를 실행할 때, Promise의 상태가 pending이면 onfullfilledQueue에 onfullfilled 콜백 함수를, onrejectedQueue에 onrejected 콜백 함수를 저장한다.
+- [ ] then 메서드를 실행할 때, Promise의 상태가 fulfilled이면 콜백 함수를 비동기로 실행한다.
+- [ ] then 메서드를 실행할 때, Promise의 상태가 rejected이면 콜백 함수를 비동기로 실행한다.
+- [ ] catch 메서드를 실행할 때, Promise의 상태가 pending이면 onrejectedQueue에 콜백 함수를 저장한다.
+- [ ] catch 메서드를 실행할 때, Promise의 상태가 rejected이면 콜백 함수를 비동기로 실행한다.
