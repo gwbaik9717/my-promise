@@ -57,30 +57,56 @@ export class MyPromise<T> {
     onrejected?: (reason: any) => any
   ) {
     return new MyPromise((resolve, reject) => {
-      if (this.status === "pending") {
-        if (onfulfilled) {
-          this.onfulfilledQueue.push(onfulfilled);
-        }
-
-        if (onrejected) {
-          this.onrejectedQueue.push(onrejected);
-        }
-      } else if (this.status === "fulfilled") {
+      if (this.status === "fulfilled") {
         queueMicrotask(() => {
-          if (onfulfilled) {
-            const value = onfulfilled(this.value as T);
-            resolve(value);
-          } else {
-            resolve(undefined);
+          try {
+            if (onfulfilled) {
+              const value = onfulfilled(this.value as T);
+              resolve(value);
+            } else {
+              resolve(undefined);
+            }
+          } catch (error) {
+            reject(error);
+          }
+        });
+      } else if (this.status === "rejected") {
+        queueMicrotask(() => {
+          try {
+            if (onrejected) {
+              const reason = onrejected(this.reason as T);
+              reject(reason);
+            } else {
+              reject(undefined);
+            }
+          } catch (error) {
+            reject(error);
           }
         });
       } else {
-        queueMicrotask(() => {
-          if (onrejected) {
-            const reason = onrejected(this.reason as T);
-            reject(reason);
-          } else {
-            reject(undefined);
+        this.onfulfilledQueue.push((value: T) => {
+          try {
+            if (onfulfilled) {
+              const fulfilled = onfulfilled(value);
+              resolve(fulfilled);
+            } else {
+              resolve(undefined);
+            }
+          } catch (error) {
+            reject(error);
+          }
+        });
+
+        this.onrejectedQueue.push((reason: any) => {
+          try {
+            if (onrejected) {
+              const rejected = onrejected(reason);
+              reject(rejected);
+            } else {
+              reject(undefined);
+            }
+          } catch (error) {
+            reject(error);
           }
         });
       }
@@ -99,5 +125,3 @@ export class MyPromise<T> {
     return this;
   }
 }
-
-const promise = new Promise<string>((resolve, reject) => {}).then();
