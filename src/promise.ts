@@ -8,6 +8,8 @@ export class MyPromise<T> {
   private status: MyPromiseStatus;
   private onfulfilledQueue: ((value: T) => void)[];
   private onrejectedQueue: ((reason: any) => void)[];
+  private value?: T;
+  private reason?: any;
 
   constructor(executor: Executor<T>) {
     this.status = "pending";
@@ -30,6 +32,8 @@ export class MyPromise<T> {
         }
       }
     });
+
+    this.value = value;
   }
 
   private reject(reason: any) {
@@ -44,12 +48,20 @@ export class MyPromise<T> {
         }
       }
     });
+
+    this.reason = reason;
   }
 
   then(onfulfilled: (value: T) => void, onrejected: (reason: any) => void) {
     if (this.status === "pending") {
       this.onfulfilledQueue.push(onfulfilled);
       this.onrejectedQueue.push(onrejected);
+    } else if (this.status === "fulfilled") {
+      queueMicrotask(() => {
+        if (this.value !== undefined) {
+          onfulfilled(this.value);
+        }
+      });
     }
 
     return this;
