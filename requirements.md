@@ -15,3 +15,7 @@
 - [x] then 메서드를 실행할 때, Promise의 상태가 rejected이면 콜백 함수를 비동기로 실행한다.
 - [x] catch 메서드를 실행할 때, Promise의 상태가 pending이면 onrejectedQueue에 콜백 함수를 저장한다.
 - [x] catch 메서드를 실행할 때, Promise의 상태가 rejected이면 콜백 함수를 비동기로 실행한다.
+- [x] then 메서드는 Promise chaining 을 지원하기 위해 onfullfilled 함수의 반환값을 resolve하는 새로운 Promise를 반환한다.
+- [x] then 메서드는 Promise chaining 을 지원하기 위해 onrejected 함수의 반환값을 reject하는 새로운 Promise를 반환한다.
+- [ ] then 메서드는 Promise chaining 을 지원하기 위해 onfullfilled 함수에서 발생한 에러를 reject하는 새로운 Promise를 반환한다.
+- [ ] then 메서드는 Promise chaining 을 지원하기 위해 onrejected 함수에서 발생한 에러를 reject하는 새로운 Promise를 반환한다.

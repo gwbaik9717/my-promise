@@ -52,21 +52,39 @@ export class MyPromise<T> {
     this.reason = reason;
   }
 
-  then(onfulfilled: (value: T) => void, onrejected: (reason: any) => void) {
-    if (this.status === "pending") {
-      this.onfulfilledQueue.push(onfulfilled);
-      this.onrejectedQueue.push(onrejected);
-    } else if (this.status === "fulfilled") {
-      queueMicrotask(() => {
-        onfulfilled(this.value as T);
-      });
-    } else {
-      queueMicrotask(() => {
-        onrejected(this.reason as T);
-      });
-    }
+  then(
+    onfulfilled?: (value: T) => T | undefined,
+    onrejected?: (reason: any) => any
+  ) {
+    return new MyPromise((resolve, reject) => {
+      if (this.status === "pending") {
+        if (onfulfilled) {
+          this.onfulfilledQueue.push(onfulfilled);
+        }
 
-    return this;
+        if (onrejected) {
+          this.onrejectedQueue.push(onrejected);
+        }
+      } else if (this.status === "fulfilled") {
+        queueMicrotask(() => {
+          if (onfulfilled) {
+            const value = onfulfilled(this.value as T);
+            resolve(value);
+          } else {
+            resolve(undefined);
+          }
+        });
+      } else {
+        queueMicrotask(() => {
+          if (onrejected) {
+            const reason = onrejected(this.reason as T);
+            reject(reason);
+          } else {
+            reject(undefined);
+          }
+        });
+      }
+    });
   }
 
   catch(onrejected: (reason: any) => void) {
@@ -82,8 +100,4 @@ export class MyPromise<T> {
   }
 }
 
-const promise = new Promise<string>((res, rej) => {
-  res("abc");
-});
-
-promise.then().catch();
+const promise = new Promise<string>((resolve, reject) => {}).then();
