@@ -1,10 +1,10 @@
 ### 기능 요구사항
 
 - [x] Promise는 pending, fulfilled, rejected 의 상태를 가진다.
-- [ ] Promise의 기본 상태는 pending 이다.
-- [ ] Promise의 인스턴스를 생성할 때, executor 함수를 인자로 받는다.
-- [ ] executor 함수는 resolve, reject 두 개의 콜백 함수를 인자로 받는다.
-- [ ] executor 함수는 비동기로 동작한다.
+- [x] Promise의 기본 상태는 pending 이다.
+- [x] Promise의 constructor 함수는 executor 함수를 인자로 받는다.
+- [x] executor 함수는 resolve, reject 두 개의 콜백 함수를 인자로 받는다.
+- [x] executor 함수는 constructor 함수가 실행될 때 즉시 실행된다.
 - [ ] executor 함수는 resolve 함수를 호출하면 fulfilled 상태로 변경된다.
 - [ ] executor 함수는 reject 함수를 호출하면 rejected 상태로 변경된다.
 - [ ] Promise의 상태가 fulfilled 이면 then 메소드의 콜백 함수가 실행된다.
