@@ -72,6 +72,10 @@ export class MyPromise<T> {
   catch(onrejected: (reason: any) => void) {
     if (this.status === "pending") {
       this.onrejectedQueue.push(onrejected);
+    } else if (this.status === "rejected") {
+      queueMicrotask(() => {
+        onrejected(this.reason as T);
+      });
     }
 
     return this;
