@@ -20,10 +20,30 @@ export class MyPromise<T> {
 
   private resolve(value: T) {
     this.status = "fulfilled";
+
+    queueMicrotask(() => {
+      while (this.onfulfilledQueue.length > 0) {
+        const onfulfilled = this.onfulfilledQueue.shift();
+
+        if (onfulfilled) {
+          onfulfilled(value);
+        }
+      }
+    });
   }
 
   private reject(reason: any) {
     this.status = "rejected";
+
+    queueMicrotask(() => {
+      while (this.onrejectedQueue.length > 0) {
+        const onrejected = this.onrejectedQueue.shift();
+
+        if (onrejected) {
+          onrejected(reason);
+        }
+      }
+    });
   }
 
   then(onfulfilled: (value: T) => void, onrejected: (reason: any) => void) {
