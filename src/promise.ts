@@ -58,9 +58,11 @@ export class MyPromise<T> {
       this.onrejectedQueue.push(onrejected);
     } else if (this.status === "fulfilled") {
       queueMicrotask(() => {
-        if (this.value !== undefined) {
-          onfulfilled(this.value);
-        }
+        onfulfilled(this.value as T);
+      });
+    } else {
+      queueMicrotask(() => {
+        onrejected(this.reason as T);
       });
     }
 
