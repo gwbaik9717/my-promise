@@ -1,23 +1,23 @@
 type MyPromiseStatus = "pending" | "fulfilled" | "rejected";
 
-type Executor = (
-  resolve: (...args: any[]) => any,
-  reject: (...args: any[]) => any
+type Executor<T> = (
+  resolve: (value: T) => void,
+  reject: (reason: any) => void
 ) => void;
-export class MyPromise {
+export class MyPromise<T> {
   private status: MyPromiseStatus;
 
-  constructor(executor: Executor) {
+  constructor(executor: Executor<T>) {
     this.status = "pending";
 
     executor(this.resolve.bind(this), this.reject.bind(this));
   }
 
-  private resolve() {
+  private resolve(value: T) {
     this.status = "fulfilled";
   }
 
-  private reject() {
+  private reject(reason: any) {
     this.status = "rejected";
   }
 }
