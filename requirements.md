@@ -14,5 +14,5 @@
 - [x] then 메서드를 실행할 때, Promise의 상태가 pending이면 onfullfilledQueue에 onfullfilled 콜백 함수를, onrejectedQueue에 onrejected 콜백 함수를 저장한다.
 - [x] then 메서드를 실행할 때, Promise의 상태가 fulfilled이면 콜백 함수를 비동기로 실행한다.
 - [x] then 메서드를 실행할 때, Promise의 상태가 rejected이면 콜백 함수를 비동기로 실행한다.
-- [ ] catch 메서드를 실행할 때, Promise의 상태가 pending이면 onrejectedQueue에 콜백 함수를 저장한다.
+- [x] catch 메서드를 실행할 때, Promise의 상태가 pending이면 onrejectedQueue에 콜백 함수를 저장한다.
 - [ ] catch 메서드를 실행할 때, Promise의 상태가 rejected이면 콜백 함수를 비동기로 실행한다.

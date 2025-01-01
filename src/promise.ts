@@ -70,7 +70,9 @@ export class MyPromise<T> {
   }
 
   catch(onrejected: (reason: any) => void) {
-    this.onrejectedQueue.push(onrejected);
+    if (this.status === "pending") {
+      this.onrejectedQueue.push(onrejected);
+    }
 
     return this;
   }
