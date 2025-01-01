@@ -13,7 +13,11 @@ export class MyPromise {
     executor(this.resolve.bind(this), this.reject.bind(this));
   }
 
-  private resolve() {}
+  private resolve() {
+    this.status = "fulfilled";
+  }
 
-  private reject() {}
+  private reject() {
+    this.status = "rejected";
+  }
 }
