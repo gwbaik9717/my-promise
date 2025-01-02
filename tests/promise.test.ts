@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { MyPromise, MyPromiseStatus } from "../src/promise";
+import { MyPromise } from "../src/promise";
 
 describe("unit test for promise", () => {
   test("Promise는 초기에 pending 상태이다.", () => {
@@ -102,6 +102,25 @@ describe("unit test for promise", () => {
       })
       .catch((reason) => {
         expect(reason).toBe(rejected2);
+      });
+  });
+
+  test("catch 와 then 이 번갈아가면서 체이닝 되었을 때 onrejected 의 return 값이 존재하면, return 값을 resolve 한다.", () => {
+    const resolved = "answer";
+    const rejected = new Error("Dummy Error");
+
+    new MyPromise<string>((resolve, reject) => {
+      setTimeout(() => {
+        reject(rejected);
+      }, 1000);
+    })
+      .catch((reason) => {
+        expect(reason).toBe(rejected);
+
+        return resolved;
+      })
+      .then((value) => {
+        expect(value).toBe(resolved);
       });
   });
 
