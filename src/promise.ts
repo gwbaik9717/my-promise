@@ -1,4 +1,4 @@
-type MyPromiseStatus = "pending" | "fulfilled" | "rejected";
+export type MyPromiseStatus = "pending" | "fulfilled" | "rejected";
 
 type Executor<T> = (
   resolve: (value: T) => void,
@@ -52,9 +52,13 @@ export class MyPromise<T> {
     this.reason = reason;
   }
 
+  getStatus() {
+    return this.status;
+  }
+
   then(
-    onfulfilled?: (value: T) => T | undefined,
-    onrejected?: (reason: any) => any
+    onfulfilled?: ((value: T) => T) | ((value: T) => void) | null,
+    onrejected?: (reason: any) => any | null
   ) {
     return new MyPromise((resolve, reject) => {
       if (this.status === "fulfilled") {
@@ -75,7 +79,11 @@ export class MyPromise<T> {
           try {
             if (onrejected) {
               const reason = onrejected(this.reason as T);
-              reject(reason);
+
+              // 반환값이 존재하면 resolve
+              if (reason !== undefined) {
+                resolve(reason);
+              }
             } else {
               reject(undefined);
             }
@@ -114,14 +122,6 @@ export class MyPromise<T> {
   }
 
   catch(onrejected: (reason: any) => void) {
-    if (this.status === "pending") {
-      this.onrejectedQueue.push(onrejected);
-    } else if (this.status === "rejected") {
-      queueMicrotask(() => {
-        onrejected(this.reason as T);
-      });
-    }
-
-    return this;
+    return this.then(null, onrejected);
   }
 }
