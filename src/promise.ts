@@ -1,4 +1,4 @@
-export type MyPromiseStatus = "pending" | "fulfilled" | "rejected";
+type MyPromiseStatus = "pending" | "fulfilled" | "rejected";
 
 type Executor<T> = (
   resolve: (value: T) => void,
@@ -21,6 +21,10 @@ export class MyPromise<T> {
   }
 
   private resolve(value: T) {
+    if (this.status !== "pending") {
+      return;
+    }
+
     this.status = "fulfilled";
 
     queueMicrotask(() => {
@@ -37,6 +41,10 @@ export class MyPromise<T> {
   }
 
   private reject(reason: any) {
+    if (this.status !== "pending") {
+      return;
+    }
+
     this.status = "rejected";
 
     queueMicrotask(() => {
