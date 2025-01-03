@@ -58,7 +58,7 @@ export class MyPromise<T> {
 
   then(
     onfulfilled?: ((value: T) => T) | ((value: T) => void) | null,
-    onrejected?: (reason: any) => any | null
+    onrejected?: ((reason: any) => any) | null
   ) {
     return new MyPromise((resolve, reject) => {
       if (this.status === "fulfilled") {
@@ -121,7 +121,20 @@ export class MyPromise<T> {
     });
   }
 
-  catch(onrejected: (reason: any) => void) {
+  catch(onrejected?: ((reason: any) => any) | null) {
     return this.then(null, onrejected);
+  }
+
+  finally(onfinally?: (() => void) | null) {
+    return this.then(
+      (value) => {
+        onfinally?.();
+        return value;
+      },
+      (reason) => {
+        onfinally?.();
+        throw reason;
+      }
+    );
   }
 }
