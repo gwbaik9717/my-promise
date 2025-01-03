@@ -4,10 +4,17 @@ type Executor<T> = (
   resolve: (value: T) => void,
   reject: (reason: any) => void
 ) => void;
+
+type OnFulfilled<T, U = T> = ((value: T) => U | void) | null;
+
+type OnRejected<U> = ((reason: any) => U | void) | null;
+
+type OnFinally = (() => void) | null;
+
 export class MyPromise<T> {
   private status: MyPromiseStatus;
-  private onfulfilledQueue: ((value: T) => void)[];
-  private onrejectedQueue: ((reason: any) => void)[];
+  private onfulfilledQueue: OnFulfilled<T>[];
+  private onrejectedQueue: OnRejected<T>[];
   private value?: T;
   private reason?: any;
 
@@ -64,42 +71,39 @@ export class MyPromise<T> {
     return this.status;
   }
 
-  then(
-    onfulfilled?: ((value: T) => T) | ((value: T) => void) | null,
-    onrejected?: ((reason: any) => any) | null
-  ) {
+  then(onfulfilled?: OnFulfilled<T>, onrejected?: OnRejected<T>) {
     return new MyPromise((resolve, reject) => {
-      if (this.status === "fulfilled") {
-        queueMicrotask(() => {
-          try {
-            if (onfulfilled) {
-              const value = onfulfilled(this.value as T);
-              resolve(value);
-            } else {
-              resolve(undefined);
-            }
-          } catch (error) {
-            reject(error);
+      const handleFulfilled = () => {
+        try {
+          if (onfulfilled) {
+            const value = onfulfilled(this.value as T);
+            resolve(value);
+          } else {
+            resolve(undefined);
           }
-        });
-      } else if (this.status === "rejected") {
-        queueMicrotask(() => {
-          try {
-            if (onrejected) {
-              const reason = onrejected(this.reason as T);
+        } catch (error) {
+          reject(error);
+        }
+      };
 
-              // 반환값이 존재하면 resolve
-              if (reason !== undefined) {
-                resolve(reason);
-              }
-            } else {
-              reject(undefined);
+      const handleRejected = () => {
+        try {
+          if (onrejected) {
+            const reason = onrejected(this.reason as T);
+
+            // 반환값이 존재하면 resolve
+            if (reason !== undefined) {
+              resolve(reason);
             }
-          } catch (error) {
-            reject(error);
+          } else {
+            reject(undefined);
           }
-        });
-      } else {
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      const handlePending = () => {
         this.onfulfilledQueue.push((value: T) => {
           try {
             if (onfulfilled) {
@@ -125,15 +129,23 @@ export class MyPromise<T> {
             reject(error);
           }
         });
+      };
+
+      if (this.status === "fulfilled") {
+        queueMicrotask(handleFulfilled);
+      } else if (this.status === "rejected") {
+        queueMicrotask(handleRejected);
+      } else {
+        handlePending();
       }
     });
   }
 
-  catch(onrejected?: ((reason: any) => any) | null) {
+  catch(onrejected?: OnRejected<T>) {
     return this.then(null, onrejected);
   }
 
-  finally(onfinally?: (() => void) | null) {
+  finally(onfinally?: OnFinally) {
     return this.then(
       (value) => {
         onfinally?.();
